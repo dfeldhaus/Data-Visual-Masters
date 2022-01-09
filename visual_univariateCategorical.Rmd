@@ -549,9 +549,11 @@ Box plots have important statistical information. The beginning and the ending o
 * 75% of the public Schools offer at most 12th GRADE (25% of the schools offer at least 12th grade).
 
 
-### Exercise (optional):
+### Project:
 
-The variable Free Lunch is telling you how many students receive those in a school. If you request a summary you get:
+Prepare a plot of one categorical variable of your choosing. If you do not have one yet, practise the next exercise:
+
+The variable "Free Lunch" from the table used in this session is telling you how many students receive lunch in a school. If you request a summary you get:
 ```{r, eval=TRUE}
 summary(eduwa$Free.Lunch)
 ```
