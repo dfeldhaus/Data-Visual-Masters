@@ -22,9 +22,7 @@ Contents:
 
 2. [Data Types.](#part2) 
 
-3. [Data Processes.](#part3)
-
-4. [Classification.](#part4)
+4. [Categorical Data.](#part4)
 
     * [Nominal Data.](#part41)
     * [Ordinal Data.](#part42)
@@ -38,7 +36,7 @@ _____
 
 Most data are commonly organized in tabular format, that is, tables. When data is in tabular format, cases are organized in rows, while variables (information about the cases) are organized in columns. Almost every data you have used in a spreadsheet follows that structure. 
 
-For example, when you visit the [website](https://nces.ed.gov/ccd/) of the Common Core of Data from the US Department of Education, you can get a data set with detailed information on public schools at the state of Washington. Let me get a data table I have prepared based on that:
+For example, when you visit the [website](https://nces.ed.gov/ccd/) of the Common Core of Data from the US Department of Education, you can get a data set with detailed information on public schools from the whole US. Let me get a data table I have prepared with schools from the State of Washington:
 
 
 
@@ -54,14 +52,11 @@ load(file=url(link))
 
 
 
-This is the list of the 24 variables (columns) in the data you brought in:
+This is the list of the 24 variables (columns) from the data loaded:
 
 ```{r column_Names, eval=TRUE}
 names(eduwa)
 ```
-
-
-The _univariate_ visualization is common for searching problems or verifying outcomes; not for giving explanations. Then, when dealing with univariate data, you need to be aware of two things: _what question you are trying to answer_; and _how to treat a particular variable_ to build the plot that will answer that question.
 
 [Go to table of contents.](#part1)
 
@@ -69,7 +64,7 @@ The _univariate_ visualization is common for searching problems or verifying out
 
 ## Data Types
 
-Generally speaking, you have either _categorical_ or _numerical_ data in each column, and whatever question you have, you first need to know how that variable you are planing to use has been encoded, so you can plan the treatment. In R, we can know that like this:
+Whatever your visual goals are, you first need to know how that variable you are planing to use has been recognised in R:
 
 ```{r dataSTR, eval=TRUE}
 # this 'width = 70,strict.width='cut' means
@@ -77,25 +72,17 @@ Generally speaking, you have either _categorical_ or _numerical_ data in each co
 
 str(eduwa,width = 70,strict.width='cut')
 ```
-
-The ones that say **num** are obviously numbers (numbers in R are *numeric* when decimal values are detected, and *integer* if they are not). The ones that say **chr** are strings.
-
-Strings are _candidates_ to be  **key** columns, which are not variables themselves, but identifiers of the cases (rows). In this case, the first four are identifiers, as well as *school names*, _address_ and _phone_. You will not analyse strings statistically, but may be used for other purposes (annotating or geocoding). Notice that for these data, _State_ is not to be analyzed as it is a constant (all rows are from WA); but it would be if the data were from the whole USA. Then, you see several variables identified as _factor_ or _ordered factor_, which are categorical variables: they can be analyzed statistically but not in the same way as numbers. 
+You see different data types in the result: **num** (numbers in R when decimal values are detected).  The ones that say **chr** are strings. You see several variables identified as _factor_ or _ordered factor_, which are categorical variables.
 
 [Go to table of contents.](#part1)
 
-<a id='part3'></a>
-
-## Data Processes
-
-Data is obtained via different processes. When you observe reality, you can _classify_, _count_ or _measure_. Each of these decisions produces data with some basic characteristics; which are represented via categories or numerical values. In this session, our focus will be on categorical data. 
 
 
 <a id='part4'></a>
 
-## Classification
+## Categorical Data
 
-Categorical data are the output of the classification process. The classification can propose an incremental or non-incremental differentiation. The former are named ordinal data and the latter nominal data. A nominal classification related to education can be type of school funding: public or private; while an ordinal one can be: elementary, middle, high, college and graduate school level.
+The classification can propose an incremental or non-incremental differentiation. The former are named ordinal data and the latter nominal data. A nominal classification related to education can be type of school funding: public or private; while an ordinal one can be: elementary, middle, high, college and graduate school level.
 
 <a id='part41'></a>
 
@@ -125,7 +112,8 @@ The absolute count can be transformed into percent or relative frequencies:
 prop.table(absoluteT)
 ```
 
-We should try using al the information possible, then it is a good idea to name the missing values:
+We should try using all the information possible, then it is a good idea to _label_ the missing values:
+
 ```{r nameNA, eval=TRUE}
 names(absoluteT)[5]='Unknown'
 ```
@@ -146,7 +134,7 @@ This table tells us the location of the public schools. What is the right visual
 pie(absoluteT)
 ```
 
-Most people tend to use pie charts with categorical data, but this **should not** be the default option to visualize classification (see this [discussion](https://medium.com/geckoboard-under-the-hood/think-before-you-pie-chart-and-more-effective-ways-to-visualize-your-data-862ea3456b26). Let's turn our pie into a **bar chart**. Let me do it with the same info I used to build the pie but using: **ggplot2**. 
+Most people tend to use pie charts with categorical data, but this **should not** be the default option to visualize classification (see this [discussion](https://medium.com/geckoboard-under-the-hood/think-before-you-pie-chart-and-more-effective-ways-to-visualize-your-data-862ea3456b26). Let's turn our pie into a **bar chart** using: **ggplot2**. 
 
 The basic steps to prepare a visual in ggplot2 are:
 
@@ -167,7 +155,7 @@ tableFreq
 ```
 
 
-This data frame has the three columns, we will use two for our bars.
+This data frame has the three columns, we will use second for our bars.
 
 b. Call the library (you may need  to install it first):
 
@@ -263,7 +251,7 @@ paste0(round(tableFreq$Percent,2), '%')
 
 So, we add them:
 ```{r annot_gg1, eval=TRUE}
-# createing labels:
+# creating labels:
 LABELS=paste0(round(tableFreq$Percent,2), '%')
 ###
 plot6 = plot5 + geom_text(vjust=0, #hjust if flipping
@@ -378,7 +366,7 @@ lolliplot2
 
 ```
 
-Maybe add some color, for that we need a new categorical column:
+Maybe add some color, for that we need to create a new categorical column:
 
 ```{r, eval=TRUE}
 # a new column for color
@@ -444,6 +432,7 @@ lolliplot4
 ```
 
 You can get rid of extra info:
+
 ```{r nudge_gg3, eval=TRUE}
 
 # calling "element_blank()"
@@ -507,7 +496,7 @@ names(frqTabO)=c('grade','pct')
 frqTabO
 ```
 
-Now, we can use ggplot:
+Notice that have previously set the right data type for this variable. Now, we can use ggplot:
 
 ```{r ordTable_gg, eval=TRUE}
 
@@ -549,11 +538,11 @@ Box plots have important statistical information. The beginning and the ending o
 * 75% of the public Schools offer at most 12th GRADE (25% of the schools offer at least 12th grade).
 
 
-### Project:
+### From numeric to ordinal
 
-Prepare a plot of one categorical variable of your choosing. If you do not have one yet, practise the next exercise:
 
-The variable "Free Lunch" from the table used in this session is telling you how many students receive lunch in a school. If you request a summary you get:
+The variable "Free Lunch"  is telling you how many students receive lunch in a school. If you request a summary you get:
+
 ```{r, eval=TRUE}
 summary(eduwa$Free.Lunch)
 ```
@@ -571,7 +560,7 @@ This new variable has this table:
 table(eduwa$Free.LunchGroup)
 ```
 
-Prepare a plot using the table above. 
+Once you have "cut" a numerical variable, you can use ordinal plots.
 
 _____
 [Go to table of contents.](#part1)
