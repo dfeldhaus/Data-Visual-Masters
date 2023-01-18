@@ -39,12 +39,15 @@ Most data are commonly organized in tabular format, that is, tables. When data i
 For example, when you visit the [website](https://nces.ed.gov/ccd/) of the Common Core of Data from the US Department of Education, you can get a data set with detailed information on public schools from the whole US. Let me get a data table I have prepared with schools from the State of Washington:
 
 
+---
+title: "543 Deliverable 1"
+output: html_notebook
+---
 
-```{r getData, eval=TRUE}
-location='https://github.com/EvansDataScience/data/raw/master/'
-file='eduwa.rda'
-link=paste0(location,file)
-
+```{r}
+link="https://github.com/mackek2/BigData/blob/main/Electric_Vehicle_Population_Data.csv?raw=true"
+big=read.csv(link)
+```
 
 #getting the data TABLE from the file in the cloud:
 load(file=url(link))
@@ -55,7 +58,7 @@ load(file=url(link))
 This is the list of the 24 variables (columns) from the data loaded:
 
 ```{r column_Names, eval=TRUE}
-names(eduwa)
+names(big)
 ```
 
 [Go to table of contents.](#part1)
@@ -70,7 +73,7 @@ Whatever your visual goals are, you first need to know how that variable you are
 # this 'width = 70,strict.width='cut' means
 # you do not want to see more than 70 characters per row.
 
-str(eduwa,width = 70,strict.width='cut')
+str(big,width = 70,strict.width='cut')
 ```
 You see different data types in the result: **num** (numbers in R when decimal values are detected).  The ones that say **chr** are strings. You see several variables identified as _factor_ or _ordered factor_, which are categorical variables.
 
@@ -92,14 +95,14 @@ The classification can propose an incremental or non-incremental differentiation
 Let's see some raw values in the variable _**LocaleType**_:
 
 ```{r head, eval=TRUE}
-head(eduwa$LocaleType,20) #first twenty values
+head(big$County,20) #first twenty values
 ```
 
 You can not get a clear idea of what a data table has, so a simple **frequency table** is the first tool to see what these nominal data are telling us:
 
 ```{r freqTab_abs, eval=TRUE}
 # absolute values
-absoluteT=table(eduwa$LocaleType,
+absoluteT=table(big$County,
                 exclude = 'nothing') #include all values!
 #here you are:
 absoluteT
@@ -112,12 +115,6 @@ The absolute count can be transformed into percent or relative frequencies:
 prop.table(absoluteT)
 ```
 
-We should try using all the information possible, then it is a good idea to _label_ the missing values:
-
-```{r nameNA, eval=TRUE}
-names(absoluteT)[5]='Unknown'
-```
-
 
 If you prefer that the range of the proportions be translated into percents you can do:
 ```{r, eval=TRUE}
@@ -125,16 +122,6 @@ propT=prop.table(absoluteT)*100
 #you get:
 propT
 ```
-
-This table tells us the location of the public schools. What is the right visual for this? Sometimes the answer seems obvious, as tradition or habits give so much weight to decisions. Let's use the very well known **pie chart**:
-
-
-```{r pieBasic, eval=TRUE}
-# the pie plots the table:
-pie(absoluteT)
-```
-
-Most people tend to use pie charts with categorical data, but this **should not** be the default option to visualize classification (see this [discussion](https://medium.com/geckoboard-under-the-hood/think-before-you-pie-chart-and-more-effective-ways-to-visualize-your-data-862ea3456b26). Let's turn our pie into a **bar chart** using: **ggplot2**. 
 
 The basic steps to prepare a visual in ggplot2 are:
 
@@ -146,7 +133,7 @@ a. Turn the frequency table into a data frame:
 The previous frequency table can be improved:
 ```{r, eval=TRUE}
 # renaming data frame columns
-names(tableFreq)=c("Locale","Count")
+names(tableFreq)=c("County","Count")
 # adding percents:
 tableFreq$Percent=as.vector(propT)
 # then, you have:
