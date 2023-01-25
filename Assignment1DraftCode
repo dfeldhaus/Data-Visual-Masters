@@ -1,0 +1,123 @@
+```{r}
+link='https://github.com/mackek2/BigData/blob/main/Electric_Vehicle_Population_Data.csv?raw=true'
+big=read.csv(link)
+```
+
+```{r column_Names, eval=TRUE}
+names(big)
+```
+
+```{r dataSTR, eval=TRUE}
+# this 'width = 70,strict.width='cut' means
+# you do not want to see more than 70 characters per row.
+
+str(big,width = 70,strict.width='cut')
+
+```
+
+```{r head, eval=TRUE}
+head(big$County,20) #first twenty values
+```
+
+```{r}
+absoluteT=table(big$County, 
+                exclude = 'nothing')
+View(absoluteT)
+
+```
+
+```{r freqTab_rel, eval=TRUE}
+# relative values
+prop.table(absoluteT)
+```
+
+```{r, eval=TRUE}
+propT=prop.table(absoluteT)*100
+#you get:
+propT
+```
+
+```{r ggplot1, eval=TRUE}
+# as data frame
+(tableFreq=as.data.frame(absoluteT))
+```
+
+```{r, eval=TRUE}
+# renaming data frame columns
+names(tableFreq)=c("County","Count")
+# adding percents:
+tableFreq$Percent=as.vector(propT)
+# then, you have:
+tableFreq
+
+```
+
+```{r ggplot_call, warning=FALSE,eval=TRUE}
+library(ggplot2)
+```
+
+```{r ggplot_base1, eval=TRUE}
+#base GGPLOT2 starts with a "base", telling WHAT VARIABLES TO PLOT
+base= ggplot(data = tableFreq, 
+             aes(x = County,
+                 y = Count)) 
+```
+
+```{r bar_gg, eval=TRUE}
+plot1 = base + geom_bar(fill ="gray",
+                        stat = 'identity') 
+plot1
+```
+
+```{r title_gg1, eval=TRUE}
+titleText='How Does Electric Vehicle Use Vary by County?'
+sourceText='Source: Washington State Department of Licensing'
+
+plot2 = plot1 + labs(title=titleText,
+                     x =NULL, 
+                     y = NULL,
+                     caption = sourceText) 
+plot2
+
+```
+
+```{r units_gg1, eval=TRUE}
+library(scales) # for "unit_format""
+
+# customize Y axis
+plot3 = plot2 + scale_y_continuous(breaks=c(0,20, 40,60),
+                                   limits = c(0, 60), 
+                                   labels=unit_format(suffix = '%'))
+plot3
+```
+
+```{r title2_gg1, eval=TRUE}
+#positions: 0 left / 1 right / 0.5 center
+plot4 = plot3 + theme(plot.caption = element_text(hjust = 0), 
+                      plot.title = element_text(hjust = 0.5))
+plot4
+```
+
+```{r, eval=TRUE}
+paste0(round(tableFreq$Percent,2), '%')
+
+```
+
+```{r annot_gg1, eval=TRUE}
+# creating labels:
+LABELS=paste0(round(tableFreq$Percent,2), '%')
+###
+plot5 = plot4 + geom_text(vjust=0, #hjust if flipping
+                          size = 5,
+                          aes(y = Percent ,
+                              label = LABELS))
+plot5# + coord_flip() # wanna flip the plot?
+
+```
+
+```{r orderFor_gg1, eval=TRUE}
+tableFreq=tableFreq[order(tableFreq$Percent),]
+# then:
+tableFreq
+```
+
